@@ -2,9 +2,10 @@ import './App.css';
 import React from "react";
 
 function App() {
-  const [textInput, setTextInput] = React.useState('Here is some example text.');
+  const [textInput, setTextInput] = React.useState('');
   const [conversionMode, setConversionMode] = React.useState('lowercase');
   const [textOutput, setTextOutput] = React.useState('');
+  const [validation, setValidation] = React.useState('none')
 
   const handleRadioChange = event => {
     setConversionMode(event.target.value);
@@ -12,12 +13,28 @@ function App() {
 
   const handleTextareaChange = event => {
     setTextInput(event.target.value);
+    setValidation('none')
   };
 
   const handleSubmit = event => {
     event.preventDefault();
-    setTextOutput('Your formatted text will go here!')
+    if (textInput) {
+      if (conversionMode === 'lowercase') {
+        return setTextOutput(textInput.toLowerCase())
+      }
+      else if (conversionMode === 'uppercase') {
+        return setTextOutput(textInput.toUpperCase())
+      }
+    } else {
+      setValidation('block')
+    }
   };
+
+  const handleClear = (e) => {
+    e.preventDefault();
+    setTextInput('')
+    setTextOutput('')
+  }
 
   return (
     <div className="App">
@@ -27,10 +44,16 @@ function App() {
         <form onSubmit={handleSubmit}>
           <div className="form-control form-control__text">
             <label htmlFor="text">Text to be converted:</label>
+            <div style={{display: validation}}>
+              <p style={{color: 'red'}}>
+                <i>Please add some text!</i>
+              </p>
+            </div>
             <textarea
               id="text"
               onChange={handleTextareaChange}
               value={textInput}
+              placeholder='Add some text to be converted...'
             />
           </div>
           <div className="form-control form-control__radio">
@@ -60,6 +83,7 @@ function App() {
             <label htmlFor="result">Converted text:</label>
             <output id="result">{textOutput}</output>
           </div>
+          <button onClick={handleClear}>Clear Form</button>
         </form>
     </div>
   );
